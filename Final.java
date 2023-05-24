@@ -26,12 +26,16 @@ class GamePanel extends JPanel implements KeyListener, ActionListener{
 	public static int screen = INTRO;
 	
 	private boolean []keys;
+	Font fontArial;
+	FontMetrics arialSize;
 	
 	javax.swing.Timer timer;
 	
 	public GamePanel(){ //sets all the elements of the game before it starts
 		keys = new boolean[KeyEvent.KEY_LAST+1];
-		
+		fontArial= new Font("Arial",Font.PLAIN,32);
+		arialSize = new FontMetrics(fontArial);
+
 		setPreferredSize(new Dimension(WIDTH, HEIGHT));
 	}
 
@@ -43,7 +47,7 @@ class GamePanel extends JPanel implements KeyListener, ActionListener{
 			
 		}
 		else if(screen == GAME){
-    {
+		}
 	}
 	
 	@Override
@@ -74,6 +78,11 @@ class GamePanel extends JPanel implements KeyListener, ActionListener{
 	@Override
 	public void paint(Graphics g){
 		if(screen == INTRO){	//draws intro screen
+			g.setColor(Color.RED);
+			g.fillRect(0,0,arialSize.stringWidth("cheese"),150);
+			g.setFont(fontArial);
+			g.setColor(Color.BLACK);
+			g.drawString("cheese",0,150);
 		}
 		else if(screen == DEATH){	//draws death screen
 		}
