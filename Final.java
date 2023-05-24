@@ -3,7 +3,6 @@ import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 import java.io.*;
-
 public class Game extends JFrame{
 	GamePanel game = new GamePanel();
 	public Game(){
