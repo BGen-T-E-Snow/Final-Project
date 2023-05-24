@@ -1,11 +1,3 @@
-//Game.java
-//Spencer Trepanier
-//Game class creates a JFrame with a space invaders game.
-//GamePanel class makes the game itself, involving a player, enemies, a ufo, and some bullets.
-//Each type of enemy has a different score, ufo has a random score from 50-300 (inclusive) in increments of 50.
-//The game is endless, after each enemy is destroyed, a new level is created with faster enemies that shoot more often, and get closer (until level 10).
-//The shields slowly wear away as bullets hit them.
-
 import java.util.*;
 import java.awt.*;
 import java.awt.event.*;
