@@ -1,2 +1,1 @@
-public Offset{}kdjsgflkjasdbhfakshdf
-fasdfasdfs
+
