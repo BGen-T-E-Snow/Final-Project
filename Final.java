@@ -4,9 +4,9 @@ import java.awt.event.*;
 import javax.swing.*;
 import java.io.*;
 
-public class Game extends JFrame{
+public class Final extends JFrame{
 	GamePanel game = new GamePanel();
-	public Game(){
+	public Final(){
 		super("Space Invaders");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		add(game);	//adds game to the frame
@@ -15,7 +15,7 @@ public class Game extends JFrame{
 	}
 	
 	public static void main(String[] arguments) {
-		Game frame = new Game();
+		Final frame = new Final();
 	}
 }
 
