@@ -1,0 +1,38 @@
+import java.awt.*;
+import java.awt.event.*;
+import javax.swing.*;
+import java.util.*;
+//import java.awt.geom.*;
+
+public class Button extends BaseFrame{
+    private int x,y,size,length,height,style;
+    private Rectangle hitbox;
+    private Font font;
+    private String BName,type;
+
+    public Button(String type, int style, String name, int xx, int yy, int s){
+        x = xx;
+        y = yy;
+        size = s;
+        height = (size*3)/4;
+        font = new Font(type, style, size);
+        BName = name;
+    }
+
+    public void draw(Graphics g){
+        g.setFont(font);
+        length = g.getFontMetrics().stringWidth(BName);
+        hitbox = new Rectangle(x,y,length,height);
+        g.setColor(Color.BLACK);
+        g.fillRect(x,y,length,height);
+        g.setColor(Color.BLUE);
+        Point mouse = MouseInfo.getPointerInfo().getLocation();
+        Point offset = Game.game.getLocationOnScreen();
+        if(hitbox.contains(mouse.x - offset.x, mouse.y - offset.y)){
+            g.setColor(Color.RED);
+        }
+        g.drawString(BName,x,y+height);
+    }
+
+    public Rectangle getRect(){return hitbox;}
+}
