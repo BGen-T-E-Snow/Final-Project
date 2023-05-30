@@ -10,7 +10,7 @@ public class Game extends BaseFrame{
 	private Player player;
 
     public Game() {
-		super("Pong", 800, 600);
+		super("Game", 800, 600);
 		back = new ImageIcon("intro.png").getImage();
 		player = new Player(200,500,50,50,10,0,10);
     }
