@@ -42,6 +42,7 @@ class BaseFrame extends JFrame implements KeyListener, ActionListener{
 	final protected static int S = 68;
 	final protected static int SPACE = 32;
 	final protected static int ESC = 27;
+	final protected static int GRAVITY = 1;
 	
     public BaseFrame(String t, int w, int h) {
 		super(t);
