@@ -28,21 +28,23 @@ import java.awt.event.*;
 import java.awt.image.*;
 
 class BaseFrame extends JFrame implements KeyListener, ActionListener{
-	protected int mx,my,mb;
-	protected boolean []keys;
+	int mx,my,mb;
+	boolean []keys;
 
-	protected Image back,dbImage;
-	protected Graphics dbg;
-	protected String col="";
-	protected GamePane pane;
-	protected Timer timer;
+	Image back,dbImage;
+	Graphics dbg;
+	String col="";
+	GamePane pane;
+	Timer timer;
 
-	final protected static int W = 87;
-	final protected static int A = 65;
-	final protected static int D = 68;
-	final protected static int SPACE = 32;
-	final protected static int ESC = 27;
-	final protected static int GRAVITY = 1;
+	final static int WIDTH = 800;
+	final static int HEIGHT = 600;
+	final static int W = 87;
+	final static int A = 65;
+	final static int D = 68;
+	final static int SPACE = 32;
+	final static int ESC = 27;
+	final static int GRAVITY = 1;
 	
     public BaseFrame(String t, int w, int h) {
 		super(t);
