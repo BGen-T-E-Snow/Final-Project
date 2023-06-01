@@ -28,15 +28,17 @@ public class Player{
 			vy = 0;
 			y = Game.HEIGHT-h;
 		}
-		int platx, platy, platlen, platbot, playerbot;
-		platx = Game.plat1.getx();
-		platy = Game.plat1.gety();
-		platlen = Game.plat1.getLength();
-		if(x <= platx + platlen && x + w >= platx){
-			if(y+h+vy >= platy && y+h <= platy){
-				vy = 0;
-				y = platy - h;
-				if(keys[JUMP]){vy -= jp;}
+		for(Platform plat : Game.getPlats()){
+			int platX, platY, platW, platBot, playerBot;
+			platX = plat.getX();
+			platY = plat.getY();
+			platW = plat.getW();
+			if(x <= platX + platW && x + w >= platX){
+				if(y+h+vy >= platY && y+h <= platY){
+					vy = 0;
+					y = platY - h;
+					if(keys[JUMP]){vy -= jp;}
+				}
 			}
 		}
 	}
