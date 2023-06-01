@@ -1,1 +1,24 @@
+import java.awt.*;
+import javax.swing.*;
 
+class Platform{
+    private int x,y,length,width;
+    Image plat;
+
+    public Platform(int xx, int yy, int len){
+        x = xx;
+        y = yy;
+        length = len;
+        width = 36;
+        plat = new ImageIcon("PlatImage.png").getImage();
+    }
+
+    public void draw(Graphics g){
+        g.drawImage(plat,x,y,null);
+    }
+
+    public int getx(){return x;}
+    public int gety(){return y;}
+    public int getLength(){return length;}
+    public int getWidth(){return width;}
+}
