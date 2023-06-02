@@ -39,15 +39,17 @@ public class Player{
 	
 	public void move(boolean []keys){	//moves player
 		System.out.println(max + " " + y);
-		if(keys[LEFT] && x>=0){
+		if(keys[LEFT] && x>=LEFTEDGE){
 			x-=vx;
-			row = LRUN;
-			isRight = false;
 		}
-		else if(keys[RIGHT] && x<=Game.WIDTH-w){
+		else if(keys[LEFT] && relX > 0){
+			relX-=vx;
+		}
+		if(keys[RIGHT] && x<=RIGHTEDGE-w){
 			x+=vx;
-			row = RRUN;
-			isRight = true;
+		}
+		else if(keys[RIGHT]){
+			relX+=vx;
 		}
 		else{
 			row = isRight ? RIDLE:LIDLE;
