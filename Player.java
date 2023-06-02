@@ -3,8 +3,8 @@ import java.awt.*;
 import javax.swing.*;
 
 public class Player{
-	private final static int LEFT = 65,RIGHT = 68, JUMP = 87,ABILITY = 32, RJUMP = 0, LJUMP = 1, RFALL = 2, LFALL = 3, RRUN = 4, LRUN = 5, RIDLE = 6, LIDLE = 7;
-	private int x,y,w,h,vx,vy,jp;
+	private final static int LEFT = 65,RIGHT = 68, JUMP = 87,ABILITY = 32, RJUMP = 0, LJUMP = 1, RFALL = 2, LFALL = 3, RRUN = 4, LRUN = 5, RIDLE = 6, LIDLE = 7, RIGHTEDGE = 650, LEFTEDGE = 150;
+	private int x,y,w,h,vx,vy,jp,relX;
 	boolean isRight;
 	boolean jumping;
 	boolean falling;
@@ -21,6 +21,7 @@ public class Player{
 		vx = vvx;
 		vy = vvy;
 		jp = jjpp;
+		relX = 0;
 		pics.add(addPics("JumpRight",2));
 		pics.add(addPics("JumpLeft",2));
 		pics.add(addPics("FallRight",2));
@@ -135,5 +136,6 @@ public class Player{
 	public int getVX(){return vx;}
 	public int getVY(){return vy;}
 	public int getJP(){return jp;}
+	public int getRelX(){return relX;}
 	
 }
