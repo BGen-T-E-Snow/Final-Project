@@ -5,9 +5,7 @@ import javax.swing.*;
 public class Player{
 	private final static int LEFT = 65,RIGHT = 68, JUMP = 87,ABILITY = 32, RJUMP = 0, LJUMP = 1, RFALL = 2, LFALL = 3, RRUN = 4, LRUN = 5, RIDLE = 6, LIDLE = 7, RIGHTEDGE = 650, LEFTEDGE = 150;
 	private int x,y,w,h,vx,vy,jp,relX;
-	boolean isRight;
-	boolean jumping;
-	boolean falling;
+	boolean isRight, jumping, falling;
 	int max;
 	double col;
 	int row;
@@ -39,18 +37,25 @@ public class Player{
 	}
 	
 	public void move(boolean []keys){	//moves player
-		System.out.println(max + " " + y);
 		if(keys[LEFT] && x>=LEFTEDGE){
 			x-=vx;
+			isRight = false;
+			row = LRUN;
 		}
 		else if(keys[LEFT] && relX > 0){
 			relX-=vx;
+			isRight = false;
+			row = LRUN;
 		}
-		if(keys[RIGHT] && x<=RIGHTEDGE-w){
+		else if(keys[RIGHT] && x<=RIGHTEDGE-w){
 			x+=vx;
+			isRight = true;
+			row = RRUN;
 		}
 		else if(keys[RIGHT]){
 			relX+=vx;
+			isRight = true;
+			row = RRUN;
 		}
 		else{
 			row = isRight ? RIDLE:LIDLE;
