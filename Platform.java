@@ -10,7 +10,7 @@ class Platform{
         y = yy;
         w = ww;
         h = hh;
-        offsetY = y+10;
+        offsetY = y+3;//
         plat = new ImageIcon("PlatImage.png").getImage();
     }
 
