@@ -128,7 +128,7 @@ public class Player{
 		}
 		else if(striking){//
 			h = image.getHeight(null);//
-			sword = new Sword(x,y);
+			sword = new Sword(x,y,61,68);
 			sword.strike(isRight);//
 			row = isRight ? RSTRIKE:LSTRIKE;
 		}
@@ -161,6 +161,8 @@ public class Player{
 		}
 		col += 0.2;
 	}
+
+	public void takeDamage(){health--;}
 		
 	public void draw(Graphics g){	//draws player
 		if(sword!=null){				//uncomment if you wanna draw the swords hitbox
