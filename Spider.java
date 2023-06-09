@@ -3,13 +3,14 @@ import javax.swing.*;
 import java.util.*;
 
 class Spider {
-    public static final int LRUN=0, RRUN=1, IDLE=2;
+    public static final int LRUN=0, RRUN=1, IDLE=2, DEATH=3;
     private int x,y,vx,vy,h,offsetX,jp,inertia,hp,attackCooldown;
     private boolean jumpingLeft,jumping,attacked,facingLeft;
     ArrayList<ArrayList<Image>> pics = new ArrayList<ArrayList<Image>>();
     private int row;
     double col;
     Rectangle hitbox;
+    private boolean dead;
 
     public Spider(int xx, int yy){
         x = xx;
@@ -22,16 +23,21 @@ class Spider {
         hp = 100;
         jumpingLeft = false;
         jumping = false;
-        pics.add(addPics("LRun",8));
-        pics.add(addPics("RRun",8));
+        pics.add(addPics("LRun",10));
+        pics.add(addPics("RRun",10));
+        pics.add(addPics("Idle",10));//
+        pics.add(addPics("Death",9));//
         col = 0;
         row = RRUN;
         attacked = false;
         attackCooldown = 0;
         facingLeft = false;
+
+        dead = false;
     }
 
     public void move(){
+        if(row != DEATH){//
         if(offsetX < Game.player.getX() && y+h >= Game.HEIGHT && Math.abs(offsetX - Game.player.getX()) <= 350){
             x+=vx;
             row = RRUN;
@@ -48,7 +54,7 @@ class Spider {
             x-=vx;
             row = LRUN;
         }
-        //else{row = IDLE;}
+        else{row = IDLE;}//
         if(Math.abs(offsetX-Game.player.getX()) < 100 && y+h >= Game.HEIGHT){
             vy -= jp;
             vx +=15;
@@ -69,9 +75,19 @@ class Spider {
         if(col >= pics.get(row).size()){
             col = 0;
         }
+
+        if(hp <= 0){//
+            row = DEATH;
+            if(col != 0){col=0;}
+        }//
+    }//
+    else{//
+        if(col >= 9){dead = true;}//
+        else{col += 0.2;}//
+    }//
     }
 
-    public void attack(Player p){
+    public void attack(){
         hitbox = new Rectangle(offsetX,y,h,h);
         if(attacked){
             if(attackCooldown < 50){attackCooldown++;}
@@ -104,4 +120,5 @@ class Spider {
 	}
 
     public int getX(){return offsetX;}
+    public boolean isDead(){return dead;}//
 }
