@@ -11,6 +11,7 @@ public class Player{
 	private int row;
 	private ArrayList<ArrayList<Image>> pics = new ArrayList<ArrayList<Image>>();
 	private Sword sword;
+	private int swordW,swordH;
 	private Image image;
 	private Rectangle playerRect;
 	
@@ -24,19 +25,21 @@ public class Player{
 		jp = jjpp;
 		health = hp;//
 		relX = 0;
-		sword = null;//
-		pics.add(addPics("JumpRight",2));
-		pics.add(addPics("JumpLeft",2));
-		pics.add(addPics("FallRight",2));
-		pics.add(addPics("FallLeft",2));
-		pics.add(addPics("AttackRight1",4));
-		pics.add(addPics("AttackLeft1",4));
-		pics.add(addPics("RunRight",8));
-		pics.add(addPics("RunLeft",8));
-		pics.add(addPics("IdleRight",8));
-		pics.add(addPics("IdleLeft",8));
-		pics.add(addPics("DeathRight",6));
-		pics.add(addPics("DeathLeft",6));
+		sword = new Sword(-10,-10,1,1);//
+		swordW = 61;
+		swordH = 68;
+		pics.add(addPics("Jump/JumpRight",2));
+		pics.add(addPics("Jump/JumpLeft",2));
+		pics.add(addPics("Fall/FallRight",2));
+		pics.add(addPics("Fall/FallLeft",2));
+		pics.add(addPics("Attack/AttackRight1",4));
+		pics.add(addPics("Attack/AttackLeft1",4));
+		pics.add(addPics("Run/RunRight",8));
+		pics.add(addPics("Run/RunLeft",8));
+		pics.add(addPics("Idle/IdleRight",8));
+		pics.add(addPics("Idle/IdleLeft",8));
+		pics.add(addPics("Death/DeathRight",6));
+		pics.add(addPics("Death/DeathLeft",6));
 		isRight = true;
 		jumping = false;
 		falling = false;
@@ -52,10 +55,11 @@ public class Player{
 	}
 	
 	public void move(boolean []keys){	//moves player	
-		if(health<=0){//
+		if(health<=0){
 			death = true;
 		}
-		if(keys[STRIKE] && !striking){//
+		//Movement
+		else if(keys[STRIKE] && !striking){//
 			striking = true;
 			col = 0;
 		}
@@ -78,7 +82,7 @@ public class Player{
 				if(x<=RIGHTEDGE-w){//
 					x+=vx;
 				}
-				else{//
+				else if(relX < 4350-w){//
 					relX+=vx;
 				}
 			}
@@ -123,14 +127,16 @@ public class Player{
 			jumping = false;
 			falling = true;
 		}
+		
+		//Start animation
+		h = image.getHeight(null);//
 		if(death){//
 			row = isRight ? RDEATH:LDEATH;
 		}
 		else if(striking){//
-			h = image.getHeight(null);//
-			sword = new Sword(x,y,61,68);
-			sword.strike(isRight);//
 			row = isRight ? RSTRIKE:LSTRIKE;
+			sword = new Sword(x,y,swordW,swordH);
+			sword.strike(isRight);//
 		}
 		else if(jumping){//
 			row = isRight ? RJUMP:LJUMP;
@@ -144,45 +150,37 @@ public class Player{
 		else if(idling){//
 			row = isRight ? RIDLE:LIDLE;
 		}
+		
+		//Cycle Animation to 0
 		if((row==RSTRIKE || row==LSTRIKE) && col>=3){//
-			col = 0;
 			striking = false;
-			sword = null;
-		}
-		else if((row==RJUMP || row==LJUMP || row==RFALL || row==LFALL) && col>=1){//
-			col = 0;
-		}
-		else if((row==RIDLE || row==LIDLE || row==RRUN || row==LRUN) && col>=7){//
+			sword = new Sword(-10,-10,1,1);
 			col = 0;
 		}
 		else if((row==RDEATH || row==LDEATH) && col>=5){//
-			col = 5;
 			Game.setScreen(Game.DEATH);
+			col = 5;
 		}
+		else if(col >= pics.get(row).size()-1){//
+			col = 0;
+		}
+		
+		//Iterate frames
 		col += 0.2;
 	}
-
-	public void takeDamage(){health--;}
 		
 	public void draw(Graphics g){	//draws player
-		if(sword!=null){				//uncomment if you wanna draw the swords hitbox
+		if(sword!=null){				//uncomment if you wanna see the sword's hitbox
 			g.setColor(Color.RED);
 			sword.draw(g);
 		}
 		g.setColor(Color.YELLOW);
 		image = pics.get(row).get((int)col);
-		w = striking ? idleW:image.getWidth(null);
-		if(row!=LSTRIKE){//
-			g.fillRect(x,y,w,h);
-			playerRect = new Rectangle(x,y,w,h);//
-			g.drawImage(image,x,y,null);
-		}
-		else{//
-			int xVal = striking ? x+w+idleW:x-w+idleW;
-			g.fillRect(xVal,y,w,h);//
-			playerRect = new Rectangle(x-w+idleW,y,w,h);//
-			g.drawImage(image,x-w+idleW,y,null);//
-		}//
+		w = row==LSTRIKE || row==RSTRIKE ? idleW:image.getWidth(null);//
+		int xVal = row==LSTRIKE ? x-w-idleW:x;//
+		playerRect = new Rectangle(x,y,w,h);//
+//		g.fillRect(x,y,w,h);//
+		g.drawImage(image,xVal,y,null);//
 	}    
 	
 	public ArrayList<Image> addPics(String name,int end){
@@ -191,6 +189,14 @@ public class Player{
 			picType.add(new ImageIcon(String.format("Player Images/%s%03d.png",name,i)).getImage());
 		}
 		return picType;
+	}
+	
+	public boolean playerCollides(Rectangle rect){
+		return playerRect.intersects(rect);
+	}
+	
+	public Sword getSword(){
+		return sword;
 	}
 	
 	public int getX(){return x;}
@@ -204,5 +210,5 @@ public class Player{
 	public int getHP(){return health;}//
 	public int getRelX(){return relX;}
 	public Rectangle getPlayerRect(){return playerRect;}//
-	
+	public void takeDamage(){health--;}
 }
