@@ -25,8 +25,8 @@ class Spider {
         jumping = false;
         pics.add(addPics("LRun",10));
         pics.add(addPics("RRun",10));
-        pics.add(addPics("Idle",10));//
-        pics.add(addPics("Death",9));//
+        pics.add(addPics("Idle",10));
+        pics.add(addPics("Death",9));
         col = 0;
         row = RRUN;
         attacked = false;
@@ -76,15 +76,15 @@ class Spider {
             col = 0;
         }
 
-        if(hp <= 0){//
+        if(hp <= 0){
             row = DEATH;
             if(col != 0){col=0;}
-        }//
-    }//
-    else{//
-        if(col >= 9){dead = true;}//
-        else{col += 0.2;}//
-    }//
+        }
+    }
+    else{
+        if(col >= 9){dead = true;}
+        else{col += 0.2;}
+    }
     }
 
     public void attack(){
