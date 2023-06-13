@@ -3,9 +3,9 @@ import java.awt.*;
 import javax.swing.*;
 
 public class Player{
-	private final static int LEFT = Game.A ,RIGHT = Game.D, JUMP = Game.W , STRIKE = Game.SPACE, RJUMP = 0, LJUMP = 1, RFALL = 2, LFALL = 3, RSTRIKE = 4, LSTRIKE = 5, RRUN = 6, LRUN = 7, RIDLE = 8, LIDLE = 9, RDEATH = 10, LDEATH = 11, RIGHTEDGE = 650, LEFTEDGE = 150;
+	private final static int LEFT = Game.A ,RIGHT = Game.D, JUMP = Game.W , STRIKE = Game.SPACE, RJUMP = 0, LJUMP = 1, RFALL = 2, LFALL = 3, RSTRIKE = 4, LSTRIKE = 5, RRUN = 6, LRUN = 7, RIDLE = 8, LIDLE = 9, RDEATH = 10, LDEATH = 11, LTAKEHIT = 12, RTAKEHIT = 13, RIGHTEDGE = 650, LEFTEDGE = 150;
 	private int x,y,w,h,vx,vy,jp,health,relX;
-	private boolean isRight, jumping, falling, striking, idling, running, death;//
+	private boolean isRight, jumping, falling, striking, idling, running, death, isHit;
 	private int idleW,idleH;
 	private double col;
 	private int row;
@@ -23,9 +23,9 @@ public class Player{
 		vx = vvx;
 		vy = vvy;
 		jp = jjpp;
-		health = hp;//
+		health = hp;
 		relX = 0;
-		sword = new Sword(-10,-10,1,1);//
+		sword = new Sword(-10,-10,1,1);
 		swordW = 61;
 		swordH = 68;
 		pics.add(addPics("Jump/JumpRight",2));
@@ -40,21 +40,25 @@ public class Player{
 		pics.add(addPics("Idle/IdleLeft",8));
 		pics.add(addPics("Death/DeathRight",6));
 		pics.add(addPics("Death/DeathLeft",6));
+		pics.add(addPics("TakeHit/TakeHitWhiteRight",4));
+		pics.add(addPics("TakeHit/TakeHitWhiteLeft",4));
 		isRight = true;
 		jumping = false;
 		falling = false;
-		striking = false;//
-		idling = true;//
-		running = false;//
+		striking = false;
+		idling = true;
+		running = false;
+		isHit = false;
 		row = RIDLE;
 		col = 0;
-		image = pics.get(row).get((int)col);//
-		idleW = image.getWidth(null);//
-		idleH = image.getHeight(null);//
-		playerRect = new Rectangle(x,y,w,h);//
+		image = pics.get(row).get((int)col);
+		idleW = image.getWidth(null);
+		idleH = image.getHeight(null);
+		playerRect = new Rectangle(x,y,w,h);
 	}
 	
 	public void move(boolean []keys){	//moves player	
+		System.out.println(health);
 		if(health<=0){
 			death = true;
 		}
@@ -67,6 +71,7 @@ public class Player{
 			isRight = false;
 			running = true;
 			if(!striking){
+				row = LRUN;
 				if(x>=LEFTEDGE){//
 					x-=vx;
 				}
@@ -79,6 +84,7 @@ public class Player{
 			isRight = true;
 			running = true;
 			if(!striking){
+				row = RRUN;
 				if(x<=RIGHTEDGE-w){//
 					x+=vx;
 				}
@@ -88,18 +94,14 @@ public class Player{
 			}
 		}
 		else{
-			idling = true;
-			running = false;
+			row = isRight ? RIDLE:LIDLE;
 		}
 		if(keys[JUMP] && y+h >= Game.HEIGHT){
-			jumping = true;
 			vy -= jp;
 		}
 		y += vy;
 		vy += Game.GRAVITY;
 		if(y+h >= Game.HEIGHT){
-			jumping = false;
-			falling = false;
 			vy = 0;
 			h = image.getHeight(null);//
 			y = Game.HEIGHT-h;
@@ -111,13 +113,10 @@ public class Player{
 			platW = plat.getW();
 			if(x <= platX + platW && x + w >= platX){
 				if(y+h+vy >= platY && y+h <= platY){
-					jumping = false;
-					falling = false;
 					vy = 0;
 					h = image.getHeight(null);//
 					y = platY - h;
 					if(keys[JUMP]){
-						jumping = true;
 						vy -= jp;
 					}
 				}
@@ -126,6 +125,14 @@ public class Player{
 		if(vy>0){//
 			jumping = false;
 			falling = true;
+		}
+		else if(vy<0){
+			jumping = true;
+			falling = false;
+		}
+		else{
+			jumping = false;
+			falling = false;
 		}
 		
 		//Start animation
@@ -138,33 +145,26 @@ public class Player{
 			sword = new Sword(x,y,swordW,swordH);
 			sword.strike(isRight);//
 		}
-		else if(jumping){//
+		else if(jumping){
 			row = isRight ? RJUMP:LJUMP;
 		}
-		else if(falling){//
+		else if(falling){
 			row = isRight ? RFALL:LFALL;
-		}
-		else if(running){//
-			row = isRight ? RRUN:LRUN;
-		}
-		else if(idling){//
-			row = isRight ? RIDLE:LIDLE;
 		}
 		
 		//Cycle Animation to 0
-		if((row==RSTRIKE || row==LSTRIKE) && col>=3){//
+		if(striking && col>=3){//
 			striking = false;
 			sword = new Sword(-10,-10,1,1);
 			col = 0;
 		}
-		else if((row==RDEATH || row==LDEATH) && col>=5){//
+		else if(death && col>=5){//
 			Game.setScreen(Game.DEATH);
 			col = 5;
 		}
 		else if(col >= pics.get(row).size()-1){//
 			col = 0;
 		}
-		
 		//Iterate frames
 		col += 0.2;
 	}
@@ -177,10 +177,10 @@ public class Player{
 		g.setColor(Color.YELLOW);
 		image = pics.get(row).get((int)col);
 		w = row==LSTRIKE || row==RSTRIKE ? idleW:image.getWidth(null);//
-		int xVal = row==LSTRIKE ? x-w-idleW:x;//
-		playerRect = new Rectangle(x,y,w,h);//
+		int xVal = row==LSTRIKE ? x-w-idleW:x;
+		playerRect = new Rectangle(x,y,w,h);
 //		g.fillRect(x,y,w,h);//
-		g.drawImage(image,xVal,y,null);//
+		g.drawImage(image,xVal,y,null);
 	}    
 	
 	public ArrayList<Image> addPics(String name,int end){
@@ -201,14 +201,21 @@ public class Player{
 	
 	public int getX(){return x;}
 	public int getY(){return y;}
+	public void setX(int newX){x=newX;}
+	public void setY(int newY){y=newY;}
 	public int getW(){return w;}
-	public int getIdleW(){return idleW;}//
+	public int getIdleW(){return idleW;}
 	public int getH(){return h;}
 	public int getVX(){return vx;}
 	public int getVY(){return vy;}
 	public int getJP(){return jp;}
-	public int getHP(){return health;}//
+	public int getHP(){return health;}
 	public int getRelX(){return relX;}
-	public Rectangle getPlayerRect(){return playerRect;}//
-	public void takeDamage(){health--;}
+	public boolean isDead(){return health<=0;}//
+	public Rectangle getPlayerRect(){return playerRect;}
+	public void takeDamage(){
+		health--;
+		row = isRight ? RTAKEHIT:LTAKEHIT;
+		isHit = true;
+	}
 }
