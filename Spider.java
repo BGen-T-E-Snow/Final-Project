@@ -5,7 +5,7 @@ import java.util.*;
 class Spider {
     public static final int LRUN=0, RRUN=1, IDLE=2, DEATH=3;
     private int x,y,vx,vy,w,h,offsetX,jp,inertia,health,attackCooldown;
-    private boolean jumpingLeft,jumping,attacked,facingLeft;
+    private boolean jumpingLeft,jumping,attacked;
     ArrayList<ArrayList<Image>> pics = new ArrayList<ArrayList<Image>>();
     private int row;
     double col;
@@ -33,61 +33,66 @@ class Spider {
         row = RRUN;
         attacked = false;
         attackCooldown = 0;
-        facingLeft = false;
         dead = false;
     }
 
     public void move(Player player){
-		System.out.println(row + " " + col);
-		hitbox = new Rectangle(offsetX,y,w,h);
-		if(row != DEATH){//
-			if(offsetX < player.getX() && y+h >= Game.HEIGHT && Math.abs(offsetX - player.getX()) <= 350){
-				x+=vx;
-				row = RRUN;
-			}
-			else if(!jumpingLeft && jumping){
-				x+=vx;
-				row = RRUN;
-			}
-			else if(offsetX > player.getX() && y+h >= Game.HEIGHT && Math.abs(offsetX - player.getX()) <= 350){
-				x-=vx;
-				row = LRUN;
-			}
-			else if(jumpingLeft && jumping){
-				x-=vx;
-				row = LRUN;
-			}
-			if(health <= 0){//
-				row = DEATH;
-			}//
-			else{row = IDLE;}//
-			if(Math.abs(offsetX-player.getX()) < 100 && y+h >= Game.HEIGHT){
-				vy -= jp;
-				vx +=15;
-				jumpingLeft = offsetX-player.getX() > 0 ? true : false;
-				jumping = true;
-			}
-			y += vy;
-			vy += BaseFrame.GRAVITY;
-			if(y+h >= Game.HEIGHT){
-				vy = 0;
-				y = Game.HEIGHT-h;
-				jumping = false;
-			}
-			if(y+h < Game.HEIGHT && vx != 2){
-				vx -= inertia;
-			}
-			if(col >= pics.get(row).size()-1){
-				col = 0;
-			}
-			if(row == DEATH && col>=9){
-				dead = true;
-			}
-			col += 0.2;
-		}//
+        if(row != DEATH){//
+        if(offsetX < player.getX() && y+h >= Game.HEIGHT && Math.abs(offsetX - player.getX()) <= 350){
+            x+=vx;
+            row = RRUN;
+        }
+        else if(!jumpingLeft && jumping){
+            x+=vx;
+            row = RRUN;
+        }
+        else if(offsetX > player.getX() && y+h >= Game.HEIGHT && Math.abs(offsetX - player.getX()) <= 350){
+            x-=vx;
+            row = LRUN;
+        }
+        else if(jumpingLeft && jumping){
+            x-=vx;
+            row = LRUN;
+        }
+        else{row = IDLE;}//
+        if(Math.abs(offsetX-player.getX()) < 100 && y+h >= Game.HEIGHT){
+            vy -= jp;
+            vx +=15;
+            jumpingLeft = offsetX-player.getX() > 0 ? true : false;
+            jumping = true;
+        }
+        y += vy;
+        vy += BaseFrame.GRAVITY;
+        if(y+h >= Game.HEIGHT){
+			vy = 0;
+			y = Game.HEIGHT-h;
+            jumping = false;
+		}
+        if(y+h < Game.HEIGHT && vx != 2){
+            vx -= inertia;
+        }
+        col += 0.2;
+        if(col >= pics.get(row).size()){
+            col = 0;
+        }
+
+        if(health <= 0){
+            row = DEATH;
+            if(col != 0){col=0;}
+        }
+    }
+    else{
+        if(col >= 8){
+            dead = true;
+            col = 0;
+        }
+        else if(!dead){col += 0.2;}
+    }
+    //System.out.println(player.getX() + "   " + player.getY() + "   " + player.getH());
     }
 
     public void attack(Player player){
+        hitbox = new Rectangle(offsetX,y,h,h);
         if(attacked){
             if(attackCooldown < 50){attackCooldown++;}
             else{
@@ -102,27 +107,19 @@ class Spider {
             }
         }
     }
-	
-	public void takeDamage(Player player){
+
+    public void takeDamage(Player player){
 		if(player.getSword().swordHit(hitbox)){
 			if(health>0){
 				health--;
-			}
-			else{
-				x = -100;
-				y = -100;
-				w = 1;
-				h = 1;
 			}
 		}
 	}
     
     public void draw(Graphics g){
-		w = pics.get(row).get((int)col).getWidth(null);
-		h = pics.get(row).get((int)col).getHeight(null);
         offsetX = x - Game.getPlayer().getRelX();
         Image image = pics.get(row).get((int)col);
-        g.fillRect(offsetX,y,w,h);
+        g.fillRect(offsetX,y,h,h);
 		g.drawImage(image,offsetX,y-30,null);
     }
 
