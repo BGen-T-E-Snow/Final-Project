@@ -5,24 +5,24 @@ import javax.swing.ImageIcon;
 
 class Bat {
     public static final int TWOSECONDS=100, IDLE=0, LFLY=1, RFLY=2, DEATH=3;
-    private int x,y,vx,health;
+    private int x,y,w,h,vx,health;
     public boolean dead;
     private double col;
     ArrayList<ArrayList<Image>> pics = new ArrayList<ArrayList<Image>>();
-    Rectangle hitbox;
     private int offsetX,frame,row;
+	private Rectangle batRect;
 
     BatDropping poop;
 
     public Bat(int xx, int yy){
-        health = 50;
         x = xx;
         y = yy;
+		w = 32;
+		h = 32;
         vx = 2;
-        health = 75;
+        health = 3;
         offsetX = x - Game.getPlayer().getRelX();
         frame = 0;
-        hitbox = new Rectangle(offsetX,y,32,32);
         dead = false;
 
         pics.add(addPics("Idle", 4));
@@ -32,46 +32,43 @@ class Bat {
 
         row = IDLE;
         col = 0;
+		batRect = new Rectangle(offsetX,y,w,h);
     }
 
-    public void move(Player player){
-        if(row != DEATH){
-            row = IDLE;
-            if(player.getX() < offsetX && Math.abs(player.getX() - offsetX) < 300){
-                x -= vx;
-                row = LFLY;
-            }
-            else if(player.getX() > offsetX && Math.abs(player.getX() - offsetX) < 300){
-                x += vx;
-                row = RFLY;
-            }
-            else if(player.getX() == offsetX){row = IDLE;}
-            offsetX = x - Game.getPlayer().getRelX();
-            col += 0.2;
-            if(col >= pics.get(row).size()){col=0;}
-            //Code for the bat pooping
-            if(poop != null){
-             poop.move();
-                if(poop.getRect().intersects(player.getPlayerRect())){
-                player.takeDamage();
-                poop = null;
-                }
-            }
-            System.out.println(player.getHP());
-            poop();
-
-            if(health <= 0){
-                row = DEATH;
-                col = 0;
+    public void move(Player player, int damage){
+		if(health <= 0){
+             row = DEATH;
+		}
+        else if(player.getX() < offsetX && Math.abs(player.getX() - offsetX) < 300){
+            x -= vx;
+            row = LFLY;
+        }
+        else if(player.getX() > offsetX && Math.abs(player.getX() - offsetX) < 300){
+            x += vx;
+            row = RFLY;
+        }
+        else if(player.getX() == offsetX){row = IDLE;}
+		else{
+			row = IDLE;
+		}
+        offsetX = x - player.getRelX();
+        col += 0.2;
+		if(row==DEATH && col>=19){
+			col = 0;
+			dead = true;
+		}
+        else if(col >= pics.get(row).size()-1){
+			col=0;
+		}
+        //Code for the bat pooping
+        if(poop != null){
+			poop.move(player);
+            if(poop.getRect().intersects(player.getPlayerRect())){
+				player.takeDamage(damage);
+				poop = null;
             }
         }
-        else{
-            if(col >= 20){
-                dead = true;
-                col = 0;
-            }
-            else if(!dead){col += 0.2;}
-        }
+        poop();
     }
 
     public void poop(){
@@ -87,14 +84,17 @@ class Bat {
         frame++;
     }
 
-    public void takeDamage(int damage){
-        health -= damage;
-    }
+	public void takeDamage(Player player, int damage){
+		if(player.getSword().swordHit(batRect)){
+			health-=damage;
+		}
+	}
 
     public void draw(Graphics g){
         offsetX = x - Game.getPlayer().getRelX();
         Image image = pics.get(row).get((int)col);
-        g.fillRect(offsetX,y,32,32);
+        batRect = new Rectangle(offsetX,y,w,h);
+		g.fillRect(offsetX,y,w,h);
         g.drawImage(image,offsetX,y,null);
         
         if(poop != null){poop.draw(g);}
@@ -111,6 +111,6 @@ class Bat {
     public int getX(){return offsetX;}
     public int getY(){return y;}
     public int getHealth(){return health;}
-    public Rectangle getRect(){return hitbox;}
+    public Rectangle getRect(){return batRect;}
     public boolean isDead(){return dead;}
 }
