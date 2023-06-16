@@ -81,18 +81,19 @@ class Boss {
             attacking = false;
             takingDamage = false;
         }
+        //if((row == ATTACKLEFT || ATTACKRIGHT) && col == 9){
+            //player.takeDamamge();
+        //}
     }
 
     public void attack(Player player){
         if(meleeCooldown >= 50){
             if(player.getX() - offsetX <= attackRange+w && player.getX() - offsetX > 0 && player.getY() + player.getH() >= y){
-                player.takeDamage();
                 attacking = true;
                 col = 0;
                 row = ATTACKRIGHT;
             }
             if(offsetX - player.getX() <= attackRange && offsetX - player.getX() >= 0 && player.getY() + player.getH() >= y){
-                player.takeDamage();
                 attacking = true;
                 col = 0;
                 row = ATTACKLEFT;
