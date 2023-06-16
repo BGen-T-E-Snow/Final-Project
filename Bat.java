@@ -47,7 +47,7 @@ class Bat {
             x += vx;
             row = RFLY;
         }
-        else if(player.getX() == offsetX){row = IDLE;}
+        else if(offsetX+w >= player.getX() && offsetX+w<=player.getX()+player.getW()){row = IDLE;}
 		else{
 			row = IDLE;
 		}
@@ -94,7 +94,7 @@ class Bat {
         offsetX = x - Game.getPlayer().getRelX();
         Image image = pics.get(row).get((int)col);
         batRect = new Rectangle(offsetX,y,w,h);
-		g.fillRect(offsetX,y,w,h);
+//		g.fillRect(offsetX,y,w,h);
         g.drawImage(image,offsetX,y,null);
         
         if(poop != null){poop.draw(g);}
