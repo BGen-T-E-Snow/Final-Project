@@ -65,8 +65,8 @@ public class Player{
 			col = 0;
 		}
 		else if(keys[LEFT]){
+			isRight = false;
 			if(!striking){
-				isRight = false;
 				row = LRUN;
 				if(x>=LEFTEDGE){//
 					x-=vx;
@@ -77,14 +77,17 @@ public class Player{
 			}
 		}
 		else if(keys[RIGHT]){
+			isRight = true;
 			if(!striking){
-				isRight = true;
 				row = RRUN;
 				if(x<=RIGHTEDGE-w){//
 					x+=vx;
 				}
-				else if(relX < 4350-w){//
+				else if(relX < 4200-w){//
 					relX+=vx;
+				}
+				else if(relX >= 4200-w  && x <= BaseFrame.WIDTH-w){
+					x+=vx;
 				}
 			}
 		}
