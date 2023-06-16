@@ -7,20 +7,18 @@ import java.util.ArrayList;
 
 public class Game extends BaseFrame{
 	public static final int INTRO=0, GAME=1, DEATH=2, LEFT = 1, RIGHT = 2;//
-	public static final int LEVELSELECT=3, LEVEL1=4, LEVEL2=5, LEVEL3=6, CONTROLS=7;//
+	public static final int LEVELSELECT=3, CONTROLS=7;//
 	public int offset;
 	private static int screen = INTRO;//
-	private int levelsUnlocked;//
 
 	private static ArrayList<Platform> platforms;
 	private static ArrayList<Spider> spiders;
 	private static ArrayList<Bat> bats = new ArrayList<Bat>();
 	private static Boss boss;//
 
-	private Image intro;//
+	private Image intro, gameOver;//
 	private Font arial;//
-	Button playButton,controlsButton;//
-	Button lvl1,lvl2,lvl3;
+	Button playButton,controlsButton,mainMenuButton;//
 	Button exitButton;
 
 	private static Player player;
@@ -31,16 +29,14 @@ public class Game extends BaseFrame{
 		arial = new Font("Arial", Font.PLAIN, 60);
 		playButton = new Button("Arial", Font.PLAIN, "Play", 40, 350, 40);//
 		controlsButton = new Button("Arial",Font.PLAIN,"Controls",40,390,40);//
-		lvl1 = new Button("Arial", Font.PLAIN, "1",50,250,120);//
-		lvl2 = new Button("Arial", Font.PLAIN, "2",400,250,120);//
-		lvl3 = new Button("Arial", Font.PLAIN, "3",680,250,120);//
+		mainMenuButton = new Button("Arial",Font.PLAIN,"Main Menu",310,460,40);//
 		exitButton = new Button("Arial",Font.PLAIN,"Exit",690,540,60);//
-		player = new Player(200,545,32,55,8,0,20,500);
+		player = new Player(200,545,32,55,8,0,20,5);
 		boss = new Boss(800,400);//
 
 		platforms = new ArrayList<Platform>();
 		spiders = new ArrayList<Spider>();
-		spiders.add(new Spider(150,545,90,60,2,10,3));
+		spiders.add(new Spider(150,545,90,60,4,9,3));
 		bats.add(new Bat(400, 80));
 
 		
@@ -48,8 +44,7 @@ public class Game extends BaseFrame{
 		platforms.add(new Platform(850,450,91,25));
 		back = new ImageIcon("BackGround/BackGround.png").getImage();
 		intro = new ImageIcon("intro.jpg").getImage();//
-
-		levelsUnlocked = 1;
+		gameOver = new ImageIcon("Game Over.jpg").getImage();//
 	}
 	
 	@Override
@@ -74,7 +69,7 @@ public class Game extends BaseFrame{
 			
 			for(int i=0; i<bats.size(); i++){
 				Bat bat = bats.get(i);
-				bat.move(player);
+				bat.move(player,2);
 			}
 			boss.move(player);
 			player.move(keys);
@@ -82,10 +77,19 @@ public class Game extends BaseFrame{
 		else if(screen == CONTROLS){
 			buttonPressed(exitButton, INTRO);
 		}
+		else if(screen == DEATH){
+			if(buttonPressed(mainMenuButton, INTRO)){
+				player = new Player(200,545,32,55,8,0,20,5);
+			}
+		}
 	}
 
-	public void buttonPressed(Button butt, int scr){//
-		if(mb == 1 && butt.getRect().contains(mx,my)){screen = scr;}//
+	public boolean buttonPressed(Button butt, int scr){//
+		if(mb == 1 && butt.getRect().contains(mx,my)){
+			screen = scr;
+			return true;
+		}//
+		else{return false;}
 	}//
 	
 	@Override
@@ -129,7 +133,12 @@ public class Game extends BaseFrame{
 			}
 			player.draw(g);
 		}
-		else if(screen == DEATH){}
+		else if(screen == DEATH){
+			g.drawImage(gameOver,-130,0,null);//
+			g.setColor(Color.WHITE);
+			if(mainMenuButton.getRect().contains(mx,my)){g.setColor(Color.RED);}//
+			mainMenuButton.draw(g);//
+		}
 		else if(screen == CONTROLS){//
 			g.drawImage(intro,-100,0,null);
 			g.setFont(arial);
