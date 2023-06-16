@@ -3,9 +3,9 @@ import java.awt.*;
 import javax.swing.*;
 
 public class Player{
-	private final static int LEFT = Game.A ,RIGHT = Game.D, JUMP = Game.W , STRIKE = Game.SPACE, RJUMP = 0, LJUMP = 1, RFALL = 2, LFALL = 3, RSTRIKE = 4, LSTRIKE = 5, RRUN = 6, LRUN = 7, RIDLE = 8, LIDLE = 9, RDEATH = 10, LDEATH = 11, LTAKEHIT = 12, RTAKEHIT = 13, RIGHTEDGE = 650, LEFTEDGE = 150;
+	private final static int LEFT = Game.A ,RIGHT = Game.D, JUMP = Game.W , STRIKE = Game.SPACE, RJUMP = 0, LJUMP = 1, RFALL = 2, LFALL = 3, RSTRIKE = 4, LSTRIKE = 5, RRUN = 6, LRUN = 7, RIDLE = 8, LIDLE = 9, RDEATH = 10, LDEATH = 11, RTAKEHIT = 12, LTAKEHIT = 13, RIGHTEDGE = 650, LEFTEDGE = 150;
 	private int x,y,w,h,vx,vy,jp,health,relX;
-	private boolean isRight, jumping, falling, striking, idling, running, death, isHit;
+	private boolean isRight, jumping, striking, idling, death, isHit;
 	private int idleW,idleH;
 	private double col;
 	private int row;
@@ -44,10 +44,8 @@ public class Player{
 		pics.add(addPics("TakeHit/TakeHitWhiteLeft",4));
 		isRight = true;
 		jumping = false;
-		falling = false;
 		striking = false;
 		idling = true;
-		running = false;
 		isHit = false;
 		row = RIDLE;
 		col = 0;
@@ -58,7 +56,6 @@ public class Player{
 	}
 	
 	public void move(boolean []keys){	//moves player	
-		System.out.println(health);
 		if(health<=0){
 			death = true;
 		}
@@ -69,7 +66,6 @@ public class Player{
 		}
 		else if(keys[LEFT]){
 			isRight = false;
-			running = true;
 			if(!striking){
 				row = LRUN;
 				if(x>=LEFTEDGE){//
@@ -82,7 +78,6 @@ public class Player{
 		}
 		else if(keys[RIGHT]){
 			isRight = true;
-			running = true;
 			if(!striking){
 				row = RRUN;
 				if(x<=RIGHTEDGE-w){//
@@ -123,16 +118,10 @@ public class Player{
 			}
 		}
 		if(vy>0){//
-			jumping = false;
-			falling = true;
+			row = isRight ? RFALL:LFALL;
 		}
 		else if(vy<0){
-			jumping = true;
-			falling = false;
-		}
-		else{
-			jumping = false;
-			falling = false;
+			row = isRight ? RJUMP:LJUMP;
 		}
 		
 		//Start animation
@@ -145,11 +134,8 @@ public class Player{
 			sword = new Sword(x,y,swordW,swordH);
 			sword.strike(isRight);//
 		}
-		else if(jumping){
-			row = isRight ? RJUMP:LJUMP;
-		}
-		else if(falling){
-			row = isRight ? RFALL:LFALL;
+		else if(isHit){
+			row = isRight ? RTAKEHIT:LTAKEHIT;
 		}
 		
 		//Cycle Animation to 0
@@ -162,11 +148,21 @@ public class Player{
 			Game.setScreen(Game.DEATH);
 			col = 5;
 		}
+		else if(isHit && col>=3){
+			col = 0;
+			isHit = false;
+		}
 		else if(col >= pics.get(row).size()-1){//
 			col = 0;
 		}
 		//Iterate frames
 		col += 0.2;
+	}
+	
+	public void takeDamage(int damage){
+		health-=damage;
+		isHit = true;
+		col = 0;
 	}
 		
 	public void draw(Graphics g){	//draws player
@@ -213,9 +209,4 @@ public class Player{
 	public int getRelX(){return relX;}
 	public boolean isDead(){return health<=0;}//
 	public Rectangle getPlayerRect(){return playerRect;}
-	public void takeDamage(){
-		health--;
-		row = isRight ? RTAKEHIT:LTAKEHIT;
-		isHit = true;
-	}
 }
