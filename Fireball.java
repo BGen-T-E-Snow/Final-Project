@@ -1,12 +1,4 @@
-import java.io.File;
-import java.io.IOException;
 import java.awt.*;
-import java.awt.geom.*;
-import java.awt.event.*;
-import javax.swing.*;
-import javax.imageio.*;
-import java.awt.image.*;
-import java.util.*;
 import javax.swing.ImageIcon;
 
 //Exists to make managing the bosses fireball easier. An object of this class will fly towards the player and
