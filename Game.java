@@ -31,8 +31,8 @@ public class Game extends BaseFrame{
 		controlsButton = new Button("Arial",Font.PLAIN,"Controls",40,390,40);//
 		mainMenuButton = new Button("Arial",Font.PLAIN,"Main Menu",310,460,40);//
 		exitButton = new Button("Arial",Font.PLAIN,"Exit",690,540,60);//
-		player = new Player(200,545,32,55,8,0,20,5);
-		boss = new Boss(800,400);//
+		player = new Player(200,545,32,55,8,0,20,1555);
+		boss = new Boss(1200,HEIGHT-200,300,200,2,200);//
 
 		platforms = new ArrayList<Platform>();
 		spiders = new ArrayList<Spider>();
