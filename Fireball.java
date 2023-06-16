@@ -9,32 +9,26 @@ import java.awt.image.*;
 import java.util.*;
 import javax.swing.ImageIcon;
 
+//Exists to make managing the bosses fireball easier. An object of this class will fly towards the player and
+//damage the player when they intersect.
 class Fireball {
-    private int x,y,offsetX,w,h;
-    private int velocity;
-    private double radians,relX,relY,vx,vy; //Player cordinates relative to itself
-    private double col;
-    private boolean hitPlayer;
+    private int x,y,offsetX,w,h; //offsetX accounts for the players movements and moves it in the opposite direction
+    //acordingly
+    private int velocity; //The speed of the fireball
+    private double radians,relX,relY,vx,vy; //relX and relY is the coordinates of the player relative to itself
+    private boolean hitPlayer; //If it has hit the player yet
 
     private Rectangle hitbox;
 
-    private ArrayList<Image> pics = new ArrayList<Image>();
     private Image firePic;
 
+    //Returns nothing and has coordinate parameters for where it is created. Creates a fireball.
     public Fireball(int xx, int yy){
-        try {
-            for(int i=1; i<=10; i++){
-                pics.add(ImageIO.read(new File(String.format("Fireball Images/%s%03d.png","Fireball",i))));
-            }
-        }
-		catch (IOException e) {
-			System.out.println(e);
-		}
         x = xx;
         y = yy;
         w = 80;
         h = 80;
-        hitPlayer = false;
+        hitPlayer = false; //If it has hit the player yet
         offsetX = x - Game.getPlayer().getRelX();
         
         velocity = 20;
@@ -48,50 +42,46 @@ class Fireball {
         hitbox = new Rectangle(offsetX,y,w,h);
         firePic = new ImageIcon("Fireball.png").getImage();
 
-        col = 0;
-
         if(Game.getPlayer().getX() <= offsetX){
-            vx *= -1;
+            vx *= -1; //For when the fireball is to the right of the player
         }
         if(Game.getPlayer().getY() <= y){
-            vy *= -1;
-            //System.out.println("above");
+            vy *= -1; //Makes the fireball fly in the correct y direction
         }
     }
 
+    //Returns nothing and has a player as the parameter. Moves the fireball towards the player.
     public void move(Player player){
         x += vx;
         y += vy;
-        //System.out.println(vy);
         offsetX = x - Game.getPlayer().getRelX();
-        col += 0.5;
-        if(col >= 10){col = 0;}
 
         hitbox = new Rectangle(offsetX,y,w,h);
         if(hitbox.intersects(player.getPlayerRect())){
-            hitPlayer = true;
+            hitPlayer = true; //Makes the player take damage if they intersect
             player.takeDamage();
         }
     }
 
+    //Returns nothing and a Graphics parameter to draw. Draws the fireball.
     public void draw(Graphics g){
         offsetX = x - Game.getPlayer().getRelX();
-        Image image = pics.get((int)col);
+        //Image image = pics.get((int)col);
 
-        g.setColor(Color.RED);
-        g.fillRect(offsetX,y,w,h);
+        //g.setColor(Color.RED);
+        //g.fillRect(offsetX,y,w,h);
         Graphics2D g2d = (Graphics2D)g;
 
-        AffineTransform rot = new AffineTransform();
-		rot.rotate(Math.toDegrees(radians),image.getWidth(null),image.getHeight(null));
-        AffineTransformOp rotOp = new AffineTransformOp(rot, AffineTransformOp.TYPE_BILINEAR);
+        //AffineTransform rot = new AffineTransform();
+		//rot.rotate(Math.toDegrees(radians),image.getWidth(null),image.getHeight(null));
+        //AffineTransformOp rotOp = new AffineTransformOp(rot, AffineTransformOp.TYPE_BILINEAR);
 
         //g2d.drawImage(image,rotOp,offsetX,y);
         g2d.drawImage(firePic,offsetX,y,null);
     }
 
-    public int getX(){return offsetX;}
-    public int getY(){return y;}
-    public Rectangle getRect(){return hitbox;}
-    public boolean hitPlayer(){return hitPlayer;}
+    public int getX(){return offsetX;} //Returns the x coordinate of the fireball. No parameters.
+    public int getY(){return y;} //Returns the y coordinate of the fireball. No parameters.
+    public Rectangle getRect(){return hitbox;} //Returns the hitbox of the fireball. No parameters.
+    public boolean hitPlayer(){return hitPlayer;} //Returns true if it has hit the player. False other wise and no parameters.
 }
