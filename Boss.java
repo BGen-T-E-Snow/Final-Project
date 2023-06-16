@@ -14,7 +14,7 @@ class Boss {
     private int range,attackRange;
     private Fireball fireball;
 
-    private boolean facingLeft,attacking,takingDamage;
+    private boolean facingLeft,attacking,takingDamage,dead;
 
     private ArrayList<ArrayList<Image>> pics = new ArrayList<ArrayList<Image>>();
 
@@ -55,21 +55,32 @@ class Boss {
 
     public void move(Player player){
         distFromPlayer = Math.abs(offsetX - player.getX());//
-        if(!attacking && !takingDamage){
-            if(player.getX() < offsetX && distFromPlayer < range){
-                //System.out.print("running left ");
-                x -= vx;
-                row = LRUN;
-                facingLeft = true;
+        if(row != LDEATH && row != RDEATH){
+            if(!attacking && !takingDamage){
+                if(player.getX() < offsetX && distFromPlayer < range){
+                    //System.out.print("running left ");
+                    x -= vx;
+                    row = LRUN;
+                    facingLeft = true;
+                }
+                else if(player.getX() > offsetX && distFromPlayer < range){
+                    x += vx;
+                    row = RRUN;
+                    facingLeft = false;
+                }
+                else{
+                    //System.out.print("idle");
+                    row = facingLeft ? IDLELEFT : IDLERIGHT;
+                }
             }
-            else if(player.getX() > offsetX && distFromPlayer < range){
-                x += vx;
-                row = RRUN;
-                facingLeft = false;
+            if(health <= 0){
+                row = facingLeft ? LDEATH : RDEATH;
+                col = 0;
             }
-            else{
-                //System.out.print("idle");
-                row = facingLeft ? IDLELEFT : IDLERIGHT;
+        }
+        else{
+            if(col >= pics.get(row).size()){
+                dead = true;
             }
         }
         offsetX = x - Game.getPlayer().getRelX();
@@ -81,6 +92,7 @@ class Boss {
             attacking = false;
             takingDamage = false;
         }
+        hitbox = new Rectangle(offsetX, y, w, h);
         //if((row == ATTACKLEFT || ATTACKRIGHT) && col == 9){
             //player.takeDamamge();
         //}
@@ -150,4 +162,5 @@ class Boss {
     public int getX(){return offsetX;}
     public int getY(){return y;}
     public Rectangle getRect(){return hitbox;}
+    public boolean isDead(){return dead;}
 }
