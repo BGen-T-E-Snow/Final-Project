@@ -1,152 +1,150 @@
 import java.awt.*;
-import java.util.ArrayList;
+import javax.swing.*;
+import java.util.*;
 
-import javax.swing.ImageIcon;
+class Boss{
+	private final int LRUN = 0, RRUN = 1, LIDLE = 2, RIDLE = 3, LDEATH = 4, RDEATH = 5, LSTRIKE = 6, RSTRIKE = 7, LTAKEHIT = 8, RTAKEHIT = 9;
+	private int x,y,w,h,vx,vy,jp,health,offsetX,attackCooldown,rangedCooldown,range;
+	private final int FIREBALLYSPAWN=70, FIREBALLXSPAWN=120;
+	private boolean isRight, idling, dead, attacked, striking, isHit;//
 
-class Boss {
-    public static final int ATTACKLEFT=0, ATTACKRIGHT=1, IDLELEFT=2, IDLERIGHT=3, LRUN=4, RRUN=5, LTAKEHIT=7, RTAKEHIT=8;
-    public static final int LDEATH=9, RDEATH=10, FIREBALLYSPAWN=70, FIREBALLXSPAWN=120;
+	private double col;
+	private int row;
+	private ArrayList<ArrayList<Image>> pics = new ArrayList<ArrayList<Image>>();
+	private Image image;
+	private Rectangle bossRect;
+	private Fireball fireball;
 
-    private int x,y,vx,vy,w,h,health,offsetX;
-    private Rectangle hitbox;
-    private double col;
-    private int row,meleeCooldown,rangedCooldown,distFromPlayer;
-    private int range,attackRange;
-    private Fireball fireball;
-
-    private boolean facingLeft,attacking,takingDamage,dead;
-
-    private ArrayList<ArrayList<Image>> pics = new ArrayList<ArrayList<Image>>();
-
-    public Boss(int xx, int yy){
+    public Boss(int xx, int yy, int ww, int hh, int vvx, int hp){
         x = xx;
         y = yy;
-        vx = 4;
-        vy = 0;
-        w = 300;
-        h = 200;
-        col = 0;
-        row = 0;
-        health = 1000;
-        offsetX = x;
-        meleeCooldown = 0;
+		w = ww;
+		h = hh;
+		vx = vvx;
+		health = hp;
+        offsetX = x - Game.getPlayer().getRelX();
+        isRight = true;
+		idling = true;
+        attacked = false;
+		striking = false;
+        dead = false;
+		isHit = false;
+		fireball = null;
+		pics.add(addPics("Run/RunLeft",6));
+		pics.add(addPics("Run/RunRight",6));
+		pics.add(addPics("Idle/IdleLeft",5));
+		pics.add(addPics("Idle/IdleRight",5));
+		pics.add(addPics("Death/DeathLeft",10));
+		pics.add(addPics("Death/DeathRight",10));
+		pics.add(addPics("Attack1/AttackLeft1",10));
+		pics.add(addPics("Attack1/AttackRight1",10));
+ 		pics.add(addPics("TakeHit/TakeHitLeft",4));
+		pics.add(addPics("TakeHit/TakeHitRight",4));
+		col = 0;
+        row = RRUN;
+		image = pics.get(row).get((int)col);
+        attackCooldown = 0;
         rangedCooldown = 0;
-        distFromPlayer = Math.abs(offsetX - Game.getPlayer().getX());
-        hitbox = new Rectangle(offsetX, y, w, h);
-
-        range = 600;
-        attackRange = 80;
-
-        facingLeft = true;
-        attacking = false;
-        takingDamage = false;
-
-        pics.add(addPics("Attack1/AttackLeft1", 10));
-        pics.add(addPics("Attack1/AttackRight1", 10));
-        pics.add(addPics("Idle/IdleLeft", 5));
-        pics.add(addPics("Idle/IdleRight", 5));
-        pics.add(addPics("Run/RunLeft", 6));
-        pics.add(addPics("Run/RunRight", 6));
-        pics.add(addPics("TakeHit/TakeHitLeft", 4));
-        pics.add(addPics("TakeHit/TakeHitRight", 4));
-        pics.add(addPics("Death/DeathLeft", 10));
-        pics.add(addPics("Death/DeathRight", 10));
+		range = 500;
+		bossRect = new Rectangle(offsetX,y,w,h);
     }
 
     public void move(Player player){
-        distFromPlayer = Math.abs(offsetX - player.getX());//
-        if(row != LDEATH && row != RDEATH){
-            if(!attacking && !takingDamage){
-                if(player.getX() < offsetX && distFromPlayer < range){
-                    //System.out.print("running left ");
-                    x -= vx;
-                    row = LRUN;
-                    facingLeft = true;
-                }
-                else if(player.getX() > offsetX && distFromPlayer < range){
-                    x += vx;
-                    row = RRUN;
-                    facingLeft = false;
-                }
-                else{
-                    //System.out.print("idle");
-                    row = facingLeft ? IDLELEFT : IDLERIGHT;
-                }
-            }
-            if(health <= 0){
-                row = facingLeft ? LDEATH : RDEATH;
-                col = 0;
-            }
-        }
-        else{
-            if(col >= pics.get(row).size()){
-                dead = true;
-            }
-        }
-        offsetX = x - Game.getPlayer().getRelX();
-        
-        attack(player);
-        col += 0.2;
-        if(col >= pics.get(row).size()){
-            col = 0;
-            attacking = false;
-            takingDamage = false;
-        }
-        hitbox = new Rectangle(offsetX, y, w, h);
-        //if((row == ATTACKLEFT || ATTACKRIGHT) && col == 9){
-            //player.takeDamamge();
-        //}
-    }
-
-    public void attack(Player player){
-        if(meleeCooldown >= 50){
-            if(player.getX() - offsetX <= attackRange+w && player.getX() - offsetX > 0 && player.getY() + player.getH() >= y){
-                attacking = true;
-                col = 0;
-                row = ATTACKRIGHT;
-            }
-            if(offsetX - player.getX() <= attackRange && offsetX - player.getX() >= 0 && player.getY() + player.getH() >= y){
-                attacking = true;
-                col = 0;
-                row = ATTACKLEFT;
-            }
-            meleeCooldown = 0;
-        }
-        else{
-            meleeCooldown++;
-        }
-        //Makes the boss shoot fireballs
-        if(rangedCooldown >= 50){ //Resets the fireball cooldown and creates new fireball
+		System.out.println(pics.get(row).size());
+		if(health <= 0){//
+			row = isRight ? RDEATH:LDEATH;
+		}
+		else if(bossRect.intersects(player.getPlayerRect())){
+			if(!striking){
+				col = 0;
+			}
+			striking = true;
+		}
+		else if(offsetX < player.getX() && Math.abs(offsetX - player.getX()) <= range){
+			isRight = true;
+			row = RRUN;
+			x+=vx;
+		}
+		else if(offsetX > player.getX() && Math.abs(offsetX - player.getX()) <= range){
+			isRight = false;
+			row = LRUN;
+			x-=vx;
+		}
+		else{
+			row = isRight ? RIDLE:LIDLE;
+		}//
+		if(y+h != Game.HEIGHT){
+			vy = 0;
+			y = Game.HEIGHT-h;
+		}
+		if(striking){
+			row = isRight ? RSTRIKE:LSTRIKE;
+		}
+		else if(isHit){
+			row = isRight ? RTAKEHIT:LTAKEHIT;
+		}
+		if((row == RDEATH || row==LDEATH) && col>=9){
+			col = 9;
+			dead = true;
+		}
+		else if(striking && col>=7){
+			col = 0;
+			striking = false;
+		}
+		else if(isHit && col>=3){
+			isHit = false;
+			col = 0;
+		}
+		else if(col >= pics.get(row).size()-1){
+			col = 0;
+		}
+		col += 0.2;
+		if(rangedCooldown >= 50){ //Resets the fireball cooldown and creates new fireball
             fireball = new Fireball(x + FIREBALLXSPAWN,y + FIREBALLYSPAWN);
             rangedCooldown = 0;
         }
-        else{rangedCooldown++;}
+        else{
+			rangedCooldown++;
+		}
         if(fireball != null){
             fireball.move(player);
             if(fireball.hitPlayer()){fireball = null;} //Removes fireball if it hits the player
         }
     }
 
-    public void takeDamage(int damage){
-        health -= damage;
-        col = 0;
-        takingDamage = true;
-        row = facingLeft ? LTAKEHIT : RTAKEHIT;
-    }
-
-    public void draw(Graphics g){
-        offsetX = x - Game.getPlayer().getRelX();
-        g.fillRect(offsetX,y,w,h);
-        offsetX = x - Game.getPlayer().getRelX();
-
-        Image image = pics.get(row).get((int)col);
-        if(attacking){
-            g.drawImage(image,offsetX,y-100,null);
+    public void attack(Player player, int damage){
+        if(attacked){
+            if(attackCooldown < 50){attackCooldown++;}
+            else{
+                attacked = false;
+                attackCooldown = 0;
+            }
         }
         else{
-            g.drawImage(image,offsetX,y,null);
+            if(bossRect.intersects(player.getPlayerRect())){
+                attacked = true;
+                player.takeDamage(damage);
+            }
         }
-        if(fireball != null){
+    }
+	
+	public void takeDamage(Player player, int damage){
+		if(player.getSword().swordHit(bossRect) && health>0){
+			health-=damage;
+			isHit = true;
+			col = 0;
+		}
+	}
+    
+    public void draw(Graphics g){
+		image = pics.get(row).get((int)col);
+		w = image.getWidth(null);
+		h = image.getHeight(null);		
+		offsetX = x - Game.getPlayer().getRelX();
+        bossRect = new Rectangle(offsetX,y,w,h);
+//        g.fillRect(offsetX,y,w,h);
+		g.drawImage(image,offsetX,y,null);
+		if(fireball != null){
             fireball.draw(g);
         }
     }
@@ -160,7 +158,6 @@ class Boss {
 	}
 
     public int getX(){return offsetX;}
-    public int getY(){return y;}
-    public Rectangle getRect(){return hitbox;}
-    public boolean isDead(){return dead;}
+    public int getHealth(){return health;}//
+    public boolean isDead(){return dead;}//
 }
