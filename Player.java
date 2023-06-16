@@ -65,8 +65,8 @@ public class Player{
 			col = 0;
 		}
 		else if(keys[LEFT]){
-			isRight = false;
 			if(!striking){
+				isRight = false;
 				row = LRUN;
 				if(x>=LEFTEDGE){//
 					x-=vx;
@@ -77,8 +77,8 @@ public class Player{
 			}
 		}
 		else if(keys[RIGHT]){
-			isRight = true;
 			if(!striking){
+				isRight = true;
 				row = RRUN;
 				if(x<=RIGHTEDGE-w){//
 					x+=vx;
