@@ -92,6 +92,13 @@ class Spider {
         }
         else if(!dead){col += 0.2;} //If it is not done with the death animation, continues to cycle through images
     }
+	y += vy;
+	vy += Game.GRAVITY;
+	if(y+h >= Game.HEIGHT){
+		vy = 0;
+		y = Game.HEIGHT-h;
+		jumping = false;
+	}
     }
 
     //Returns nothing and has a Player parameter to make accessing its fields easier. Causes spider to attack periodically
