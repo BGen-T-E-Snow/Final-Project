@@ -72,7 +72,7 @@ class Spider {
 			y = Game.HEIGHT-h; //Puts the spider on the ground
             jumping = false;
 		}
-        if(y+h < Game.HEIGHT && vx != 2){
+        if(y+h < Game.HEIGHT && (vx >= 4)){ //Makes sure it doesnt decrease speed beyond a certain point
             vx -= inertia; //Decreases vx while it is above the ground to simulate air resistance
         }
         col += 0.2; //Cycles through the images of whichever animation it is on
@@ -108,7 +108,7 @@ class Spider {
             else{
                 if(hitbox.intersects(player.getPlayerRect())){
                     attacked = true; //Attacks when it intersects the player
-                    player.takeDamage();
+                    player.takeDamage(1);
                 }
             }
         }
