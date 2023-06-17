@@ -8,7 +8,7 @@ import java.awt.*;
 import javax.swing.*;
 
 public class Player{
-	private final static int LEFT = Game.A ,RIGHT = Game.D, JUMP = Game.W , STRIKE = Game.SPACE, RJUMP = 0, LJUMP = 1, RFALL = 2, LFALL = 3, RSTRIKE = 4, LSTRIKE = 5, RRUN = 6, LRUN = 7, RIDLE = 8, LIDLE = 9, RDEATH = 10, LDEATH = 11, RTAKEHIT = 12, LTAKEHIT = 13, RIGHTEDGE = 650, LEFTEDGE = 150;
+	private final static int LEFT = Game.A ,RIGHT = Game.D, JUMP = Game.W , STRIKE = Game.SPACE, RJUMP = 0, LJUMP = 1, RFALL = 2, LFALL = 3, RSTRIKE = 4, LSTRIKE = 5, RRUN = 6, LRUN = 7, RIDLE = 8, LIDLE = 9, RDEATH = 10, LDEATH = 11, RTAKEHIT = 12, LTAKEHIT = 13, RIGHTEDGE = 650, LEFTEDGE = 150; //final constants for frames and directions and such
 	private int x,y,w,h,vx,vy,jp,health,relX;	//initializes int variables for the player
 	private boolean isRight, striking, death, isHit;	//initializes the toggles of what the player is doing
 	private int idleW,idleH;	//idle size for when the player is striking, the sword is everything outside of these values
