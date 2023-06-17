@@ -51,24 +51,14 @@ class Fireball {
         hitbox = new Rectangle(offsetX,y,w,h);
         if(hitbox.intersects(player.getPlayerRect())){
             hitPlayer = true; //Makes the player take damage if they intersect
-            player.takeDamage();
+            player.takeDamage(5);
         }
     }
 
     //Returns nothing and a Graphics parameter to draw. Draws the fireball.
     public void draw(Graphics g){
         offsetX = x - Game.getPlayer().getRelX();
-        //Image image = pics.get((int)col);
-
-        //g.setColor(Color.RED);
-        //g.fillRect(offsetX,y,w,h);
         Graphics2D g2d = (Graphics2D)g;
-
-        //AffineTransform rot = new AffineTransform();
-		//rot.rotate(Math.toDegrees(radians),image.getWidth(null),image.getHeight(null));
-        //AffineTransformOp rotOp = new AffineTransformOp(rot, AffineTransformOp.TYPE_BILINEAR);
-
-        //g2d.drawImage(image,rotOp,offsetX,y);
         g2d.drawImage(firePic,offsetX,y,null);
     }
 
