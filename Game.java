@@ -7,7 +7,7 @@ import java.util.ArrayList;
 
 public class Game extends BaseFrame{
 	public static final int INTRO=0, GAME=1, DEATH=2, LEFT = 1, RIGHT = 2;//
-	public static final int LEVELSELECT=3, CONTROLS=7;//
+	public static final int LEVELSELECT=3, CONTROLS=7, WIN=8;//
 	public int offset;
 	private static int screen = INTRO;//
 
@@ -16,7 +16,7 @@ public class Game extends BaseFrame{
 	private static ArrayList<Bat> bats = new ArrayList<Bat>();
 	private static Boss boss;//
 
-	private Image intro, gameOver;//
+	private Image intro, gameOver, winScreen;//
 	private Font arial;//
 	Button playButton,controlsButton,mainMenuButton;//
 	Button exitButton;
@@ -31,7 +31,7 @@ public class Game extends BaseFrame{
 		controlsButton = new Button("Arial",Font.PLAIN,"Controls",40,390,40);//
 		mainMenuButton = new Button("Arial",Font.PLAIN,"Main Menu",310,460,40);//
 		exitButton = new Button("Arial",Font.PLAIN,"Exit",690,540,60);//
-		player = new Player(200,545,32,55,8,0,20,1555);
+		player = new Player(200,545,32,55,20,0,20,1555);
 		boss = new Boss(1200,HEIGHT-200,300,200,2,200);//
 
 		platforms = new ArrayList<Platform>();
@@ -45,6 +45,7 @@ public class Game extends BaseFrame{
 		back = new ImageIcon("BackGround/BackGround.png").getImage();
 		intro = new ImageIcon("intro.jpg").getImage();//
 		gameOver = new ImageIcon("Game Over.jpg").getImage();//
+		winScreen = new ImageIcon("Win Screen.jpg").getImage();//
 	}
 	
 	@Override
@@ -72,12 +73,21 @@ public class Game extends BaseFrame{
 				bat.move(player,2);
 			}
 			boss.move(player);
+			boss.attack(player,5);
 			player.move(keys);
+			if(player.getX() + player.getW() >= WIDTH){
+				screen = WIN;
+			}
 		}
 		else if(screen == CONTROLS){
 			buttonPressed(exitButton, INTRO);
 		}
 		else if(screen == DEATH){
+			if(buttonPressed(mainMenuButton, INTRO)){
+				player = new Player(200,545,32,55,8,0,20,5);
+			}
+		}
+		else if(screen == WIN){
 			if(buttonPressed(mainMenuButton, INTRO)){
 				player = new Player(200,545,32,55,8,0,20,5);
 			}
@@ -150,8 +160,15 @@ public class Game extends BaseFrame{
 			g.drawString(String.format("A 		 -  %20s","Move Left"),100,310);//
 			g.drawString(String.format("D 		 -  %19s","Move Right"),100,370);//
 			g.drawString(String.format("Space bar -  %10s","Attack"),100,430);//
+			if(exitButton.getRect().contains(mx,my)){g.setColor(Color.RED);}
 			exitButton.draw(g);
 		}//
+		else if(screen == WIN){
+			g.drawImage(winScreen,0,0,null);
+			g.setColor(Color.WHITE);
+			if(mainMenuButton.getRect().contains(mx,my)){g.setColor(Color.RED);}
+			mainMenuButton.draw(g);
+		}
     }
    
    
