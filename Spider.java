@@ -97,7 +97,6 @@ class Spider {
 	if(y+h >= Game.HEIGHT){
 		vy = 0;
 		y = Game.HEIGHT-h;
-		jumping = false;
 	}
     }
 
