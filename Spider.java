@@ -65,8 +65,6 @@ class Spider {
             jumpingLeft = offsetX-player.getX() > 0 ? true : false; //Checks which direction it is jumping
             jumping = true;
         }
-        y += vy; //For jumping
-        vy += BaseFrame.GRAVITY; //Decreases vertical velocity to simulate gravity
         if(y+h >= Game.HEIGHT){ //if it has hit the ground
 			vy = 0; //Sets vy back to 0 so it doesn't fall through the ground
 			y = Game.HEIGHT-h; //Puts the spider on the ground
@@ -92,12 +90,8 @@ class Spider {
         }
         else if(!dead){col += 0.2;} //If it is not done with the death animation, continues to cycle through images
     }
-	y += vy;
-	vy += Game.GRAVITY;
-	if(y+h >= Game.HEIGHT){
-		vy = 0;
-		y = Game.HEIGHT-h;
-	}
+        y += vy; //For jumping
+        vy += BaseFrame.GRAVITY; //Decreases vertical velocity to simulate gravity
     }
 
     //Returns nothing and has a Player parameter to make accessing its fields easier. Causes spider to attack periodically
