@@ -10,6 +10,10 @@ import javax.swing.*;
 public class Player{
 	private final static int LEFT = Game.A ,RIGHT = Game.D, JUMP = Game.W , STRIKE = Game.SPACE, RJUMP = 0, LJUMP = 1, RFALL = 2, LFALL = 3, RSTRIKE = 4, LSTRIKE = 5, RRUN = 6, LRUN = 7, RIDLE = 8, LIDLE = 9, RDEATH = 10, LDEATH = 11, RTAKEHIT = 12, LTAKEHIT = 13, RIGHTEDGE = 650, LEFTEDGE = 150; //final constants for cols and directions and such
 	private int x,y,w,h,vx,vy,jp,health,relX;	//initializes int variables for the player
+	//relX is the position of the player inside the game insetad of the top left of the frame. Used for when the player
+	//gets close to either edge of the screen. By drawing player at x while using relX for every other class, it moves
+	//Everything else in the opposite direction of the player, making it look like the player is moving. This makes relX
+	//the in game coordinate and not its coordinate on the screen.
 	private boolean isRight, striking, death, isHit;	//initializes the toggles of what the player is doing
 	private int idleW,idleH;	//idle size for when the player is striking, the sword is everything outside of these values
 	private double col;	//2D list row and col for frames in each row of the 2D list
@@ -71,11 +75,11 @@ public class Player{
 			isRight = false;	//faces left
 			if(!striking){
 				row = LRUN;		//sets row to left running frames if not striking
-				if(x>=LEFTEDGE){   //////George's work/////
+				if(x>=LEFTEDGE){   //
 					x-=vx;	       //
-				}                  //EXPLAIN THIS PART GEORGE ///////////////////////////////////////////////////
-				else if(relX > 0){ //
-					relX-=vx;      //
+				}                  //
+				else if(relX > 0){ //Begins to subtract from relative x instead once it has reached the left edge
+					relX-=vx;      //to avoid moving the player and start moving everything else instead
 				}                  //
 			}
 		}
@@ -86,12 +90,13 @@ public class Player{
 				if(x<=RIGHTEDGE-w){//                                //
 					x+=vx;                                           //////George's work/////
 				}                                                    //
-				else if(relX < 4200-w){//                            //
-					relX+=vx;                                        //EXPLAIN THIS GEORGE //////////////////////////
+				else if(relX < 4200-w){//                            //relX here works the same way but for moving it to
+					relX+=vx;                                        //the right
 				}                                                    //
-				else if(relX >= 4200-w  && x <= BaseFrame.WIDTH-w){  //
-					x+=vx;                                           //
-				}                                                    //
+				else if(relX >= 4200-w  && x <= BaseFrame.WIDTH-w){  //First statement checks if you have reached the end of the
+					x+=vx;                                           //level. It then allows you to move past the normal RIGHTEDGE.
+				}                                                    //x <= BaseFrame.WIDTH-w is for when you hit the real edge
+																	 //of the game panel, and stops you from moving off screen.
 			}
 		}
 		else{
