@@ -36,5 +36,4 @@ public class Button{
     public int getY(){return y;} //No parameters and returns y position
     public int getWidth(){return length;} //No parameters and returns length of the button
     public int getHeight(){return height;} //No parameters and returns the height of the button
-
 }
